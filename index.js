@@ -21,42 +21,21 @@ const apiUrl = process.env.API_URL || 'http://localhost:8080';
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     Chat:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           example: 1
- *         username:
- *           type: string
- *           example: admin
- *         message:
- *           type: string
- *           example: hello world
- *     NewChat:
- *       type: object
- *       required:
- *         - username
- *         - message
- *       properties:
- *         username:
- *           type: string
- *           example: admin
- *         message:
- *           type: string
- *           example: hello world
+ * tags:
+ *   - name: Chat API
+ *     description: Endpoints para el chat de la clase
  */
 
 /**
  * @swagger
  * /ping:
  *   get:
- *     summary: Returns a pong message.
+ *     tags:
+ *       - Chat API
+ *     summary: Healthcheck para validar que el API está activo.
  *     responses:
  *       200:
- *         description: Pong response.
+ *         description: Pong.
  *         content:
  *           application/json:
  *             schema:
@@ -74,10 +53,12 @@ app.get('/ping', (req, res) => {
  * @swagger
  * /chats:
  *   get:
- *     summary: Retrieve all chats.
+ *     tags:
+ *       - Chat API
+ *     summary: Lista todos los chats de la base de datos.
  *     responses:
  *       200:
- *         description: A list of chats.
+ *         description: Lista de todos los chats.
  *         content:
  *           application/json:
  *             schema:
@@ -102,7 +83,9 @@ app.get('/chats', async (req, res) => {
  * @swagger
  * /chats:
  *   post:
- *     summary: Create a new chat message.
+ *     tags:
+ *       - Chat API
+ *     summary: Crear un nuevo mensaje en el chat.
  *     requestBody:
  *       required: true
  *       content:
@@ -111,7 +94,7 @@ app.get('/chats', async (req, res) => {
  *             $ref: '#/components/schemas/NewChat'
  *     responses:
  *       201:
- *         description: Chat created successfully.
+ *         description: Chat creado exitosamente.
  *         content:
  *           application/json:
  *             schema:
@@ -159,7 +142,7 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { defaultModelsExpandDepth: -1 }));
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
