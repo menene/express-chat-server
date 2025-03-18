@@ -1,5 +1,3 @@
-require('dotenv').config(); // Load environment variables from .env
-
 const express = require('express');
 const mysql = require('mysql2/promise');
 const swaggerUi = require('swagger-ui-express');
@@ -10,6 +8,7 @@ const port = 8080;
 
 app.use(express.json());
 
+// Database configuration from environment variables or defaults
 const dbConfig = {
   host: process.env.DB_HOST || 'db',
   user: process.env.DB_USER || 'chatuser',
@@ -17,6 +16,7 @@ const dbConfig = {
   database: process.env.DB_NAME || 'chatdb'
 };
 
+// Retrieve API URL from environment variables or use default
 const apiUrl = process.env.API_URL || 'http://localhost:8080';
 
 /**
@@ -140,13 +140,14 @@ app.post('/chats', async (req, res) => {
   }
 });
 
+// Swagger configuration using the API_URL from environment variables
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
       title: 'Chat API',
       version: '1.0.0',
-      description: 'A simple Chat API using Express and MySQL'
+      description: 'API para aplicación de chat construida con Express y MySQL'
     },
     servers: [
       {
@@ -154,7 +155,7 @@ const swaggerOptions = {
       }
     ]
   },
-  apis: ['./index.js']
+  apis: ['./index.js'] // Path to the API docs.
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
