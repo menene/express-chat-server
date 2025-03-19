@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
@@ -7,8 +8,8 @@ const app = express();
 const port = 8080;
 
 app.use(express.json());
+app.use(cors());
 
-// Database configuration from environment variables or defaults
 const dbConfig = {
   host: process.env.DB_HOST || 'db',
   user: process.env.DB_USER || 'chatuser',
@@ -16,7 +17,6 @@ const dbConfig = {
   database: process.env.DB_NAME || 'chatdb'
 };
 
-// Retrieve API URL from environment variables or use default
 const apiUrl = process.env.API_URL || 'http://localhost:8080';
 
 /**
@@ -72,7 +72,9 @@ app.get('/chats', async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute('SELECT id, username, message FROM chats');
+    
     await connection.end();
+    
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -109,6 +111,7 @@ app.post('/chats', async (req, res) => {
   if (!username || !message) {
     return res.status(400).json({ error: 'Username and message required' });
   }
+  
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
@@ -116,14 +119,15 @@ app.post('/chats', async (req, res) => {
       [username, message]
     );
     const insertedId = result.insertId;
+    
     await connection.end();
+    
     res.status(201).json({ id: insertedId, username, message });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Swagger configuration using the API_URL from environment variables
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -138,7 +142,7 @@ const swaggerOptions = {
       }
     ]
   },
-  apis: ['./index.js'] // Path to the API docs.
+  apis: ['./index.js']
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
